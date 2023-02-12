@@ -20,9 +20,4 @@ public class FiniteStateMachineGraphView : GraphView
 		var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/Window/FiniteStateMachineEditor.uss");
 		this.styleSheets.Add(styleSheet);
 	}
-
-	private void CreateNodeView(State state)
-	{
-
-	}
 }

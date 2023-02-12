@@ -1,10 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public interface ITransition<TTrigger>
+[System.Serializable]
+public sealed class Transition : ScriptableObject
 {
-    IState StateFrom { get; }
-    IState StateTo { get; }
-    TTrigger Trigger { get; }
+    public IState From { get; set; }
+    public IState To { get; set; }
+    public Decision Decision { get; set; }
+
+    public void Execute(StateMachine stateMachine)
+    {
+        if (Decision.Decide())
+            stateMachine.Fire(To);
+    }
+
+    public override string ToString()
+    {
+        return $"{From.Name} -> {To.Name}";
+    }
 }

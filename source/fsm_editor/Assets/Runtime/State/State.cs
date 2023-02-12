@@ -1,32 +1,35 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class State : ScriptableObject
+public interface IState
 {
-    public string Name;
+    public string Name { get; set; }
+    public List<StateDefinition> Definitions { get; set; }
+    void OnEnter();
+    void OnExit();
+}
 
-    public List<StateAction> Actions = new();
-    public List<Transition> Transitions = new();
+[System.Serializable]
+public sealed class State : ScriptableObject, IState
+{
+    public string Name { get; set; }
+
+    public List<StateDefinition> Definitions { get; set; } = new();
 
     public void OnEnter()
     {
-        foreach (var action in Actions)
-            action.OnEnter();
+        foreach (var definition in Definitions)
+            definition.OnEnter();
     }
 
     public void OnExit()
     {
-        foreach (var action in Actions)
-            action.OnEnter();
+        foreach (var definition in Definitions)
+            definition.OnEnter();
     }
 
-    public void Update()
+    public override string ToString()
     {
-        foreach (var trans in Transitions)
-        {
-            //trans.Execute()
-        }
+        return Name;
     }
 }
