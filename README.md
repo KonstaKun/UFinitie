@@ -1,2 +1,2 @@
 # UFinitie
-Node based finite state machine
+Node based finite state machine (WIP)
