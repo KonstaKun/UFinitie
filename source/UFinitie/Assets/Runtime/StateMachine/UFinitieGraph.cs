@@ -3,21 +3,21 @@ using System.Linq;
 using UnityEngine;
 using XNode;
 
-[CreateAssetMenu(menuName = "UFinitie/Create/State machine graph")]
+[CreateAssetMenu(menuName = "UFinitie/State Machine Graph")]
 public class UFinitieGraph : NodeGraph
 {
-    private RootNode mRoot;
+    private RootNode _root;
 
-    public RootNode Root => mRoot != null ? mRoot : FindRoot();
+    public RootNode Root => _root != null ? _root : FindRoot();
 
     public override Node AddNode(Type type)
     {
         if (type == typeof(RootNode))
         {
-            if (mRoot == null)
+            if (_root == null)
             {
-                mRoot = base.AddNode(type) as RootNode;
-                return mRoot;
+                _root = base.AddNode(type) as RootNode;
+                return _root;
             }
 
             return null;
@@ -28,10 +28,10 @@ public class UFinitieGraph : NodeGraph
 
     private RootNode FindRoot()
     {
-        mRoot = nodes.FirstOrDefault(node => node is RootNode) as RootNode;
-        if (mRoot == null)
-            mRoot = AddNode<RootNode>();
+        _root = nodes.FirstOrDefault(node => node is RootNode) as RootNode;
+        if (_root == null)
+            _root = AddNode<RootNode>();
 
-        return mRoot;
+        return _root;
     }
 }

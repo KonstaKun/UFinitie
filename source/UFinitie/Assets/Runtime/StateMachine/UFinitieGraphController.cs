@@ -5,7 +5,7 @@ public class UFinitieGraphController
 {
     private BaseNode _currentNode;
 
-    public void Start(UFinitieGraph graph)
+    public void Run(UFinitieGraph graph)
     {
         if (graph == null)
         {
@@ -21,7 +21,7 @@ public class UFinitieGraphController
     {
         if (_currentNode == null)
         {
-            Debug.LogError($"Please, try call {nameof(Start)} method before {nameof(Next)} one");
+            Debug.LogError($"Please, try call {nameof(Run)} method before {nameof(Next)} one");
             return;
         }
 
