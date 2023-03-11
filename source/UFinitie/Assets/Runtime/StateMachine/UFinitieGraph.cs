@@ -6,43 +6,18 @@ using XNode;
 [CreateAssetMenu(menuName = "UFinitie/Create/State machine graph")]
 public class UFinitieGraph : NodeGraph
 {
-    private RootNode _root;
-    private BaseNode _currentNode;
+    private RootNode mRoot;
 
-    public void Initialize()
-    {
-        _root = GetRoot();
-        if (_root == null)
-            _root = AddNode<RootNode>();
-
-        _currentNode = _root;
-        MoveNext();
-    }
-
-    public void MoveNext()
-    {
-        var node = _currentNode.OnMoveNext();
-        if (node != _currentNode)
-        {
-            _currentNode.OnExit();
-            _currentNode = node;
-            _currentNode.OnEnter();
-        }
-    }
-
-    public void Reset()
-    {
-        _currentNode = _root;
-    }
+    public RootNode Root => mRoot != null ? mRoot : FindRoot();
 
     public override Node AddNode(Type type)
     {
         if (type == typeof(RootNode))
         {
-            if (_root == null)
+            if (mRoot == null)
             {
-                _root = base.AddNode(type) as RootNode;
-                return _root;
+                mRoot = base.AddNode(type) as RootNode;
+                return mRoot;
             }
 
             return null;
@@ -51,8 +26,12 @@ public class UFinitieGraph : NodeGraph
         return base.AddNode(type);
     }
 
-    private RootNode GetRoot()
+    private RootNode FindRoot()
     {
-        return _root != null ? _root : nodes.FirstOrDefault(node => node is RootNode) as RootNode;
+        mRoot = nodes.FirstOrDefault(node => node is RootNode) as RootNode;
+        if (mRoot == null)
+            mRoot = AddNode<RootNode>();
+
+        return mRoot;
     }
 }

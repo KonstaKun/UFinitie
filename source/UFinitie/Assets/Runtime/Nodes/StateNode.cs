@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using XNode;
 
 [NodeTint("#8A66BA")]
 public sealed class StateNode : BaseNode
@@ -12,40 +11,57 @@ public sealed class StateNode : BaseNode
 
     [SerializeField] private List<StateAction> _actions = new List<StateAction>();
 
+    [NonSerialized] public bool IsActive;
+
+    public override ExecutionMode Mode => ExecutionMode.Success;
+
     public override void OnEnter()
     {
+        IsActive = true;
+
         _actions.ForEach(static action => action.OnEnter());
     }
 
     public override void OnExit()
     {
+        IsActive = false;
+
         _actions.ForEach(static action => action.OnExit());
     }
 
-    public override BaseNode OnMoveNext()
+    public override ExecutionMode TryNext(out BaseNode next)
     {
-        var children = GetChildren().ToList();
-        children.Sort(static (x, y) => x.position.y > y.position.y ? 1 : -1);
-
-        BaseNode node = this;
+        next = null;
+        var children = GetSortedOutportNodes<BaseNode>(nameof(Out)).ToList();
         foreach (var child in children)
         {
-            var next = child.OnMoveNext();
-            if (next != null)
+            switch (child.Mode)
             {
-                node = next;
-                break;
+                case ExecutionMode.Success:
+                    next = child;
+                    return ExecutionMode.Success;
+                case ExecutionMode.Continue:
+                    var mode = child.TryNext(out next);
+                    if (mode == ExecutionMode.Pass)
+                        continue;
+                    return mode;
+                default:
+                    throw new NotImplementedException($"{child.name} has {child.Mode} mode");
             }
         }
 
-        return node;
+        return ExecutionMode.Pass;
     }
 
-    private IEnumerable<BaseNode> GetChildren()
+    private List<TNode> GetSortedOutportNodes<TNode>(string outportName) where TNode : BaseNode
     {
-        return GetOutputPort(nameof(Out))
+        var children = GetOutputPort(outportName)
             .GetConnections()
             .Where(port => port.IsInput)
-            .Select(port => port.node as BaseNode);
+            .Select(port => port.node as TNode)
+            .ToList();
+
+        children.Sort(static (x, y) => x.position.y > y.position.y ? 1 : -1);
+        return children;
     }
 }
