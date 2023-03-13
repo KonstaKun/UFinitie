@@ -2,7 +2,9 @@
     "name": "UFinitie.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:d1349ee3d32588244a884a74d23dd40b"
+        "GUID:d1349ee3d32588244a884a74d23dd40b",
+        "GUID:002c1bbed08fa44d282ef34fd5edb138",
+        "GUID:b8e24fd1eb19b4226afebb2810e3c19b"
     ],
     "includePlatforms": [
         "Editor"

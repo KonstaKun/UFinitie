@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using XNode;
 
 [NodeTint("#5E76C2")]
 public sealed class TransitionNode : BaseNode
@@ -10,8 +9,30 @@ public sealed class TransitionNode : BaseNode
 
     [SerializeField] private Condition _condition;
 
-    public override BaseNode OnMoveNext()
+    public override ExecutionMode Mode => ExecutionMode.Continue;
+
+    public override ExecutionMode TryNext(out BaseNode next)
     {
-        return _condition.Value ? GetOutputPort(nameof(Out)).Connection?.node as BaseNode : null;
+        next = null;
+
+        if (_condition != null && _condition.Value)
+        {
+            var child = GetOutputPort(nameof(Out)).Connection?.node as BaseNode;
+            if (child != null)
+            {
+                switch (child.Mode)
+                {
+                    case ExecutionMode.Success:
+                        next = child;
+                        return ExecutionMode.Success;
+                    case ExecutionMode.Continue:
+                        return child.TryNext(out next);
+                    default:
+                        throw new NotImplementedException($"{child.name} has {child.Mode} mode");
+                }
+            }
+        }
+
+        return ExecutionMode.Pass;
     }
 }
